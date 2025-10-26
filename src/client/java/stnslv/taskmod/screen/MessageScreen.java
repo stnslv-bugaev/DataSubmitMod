@@ -5,105 +5,122 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.lwjgl.glfw.GLFW;
 
+/**
+ * A custom screen for sending messages.
+ * <p>
+ * This screen provides a simple UI with an input field and a send button.
+ * The message can be sent either by clicking the button or pressing Enter.
+ */
 public class MessageScreen extends Screen {
+    // UI Layout Constants
+    private static final int INPUT_WIDTH = 300;
+    private static final int INPUT_HEIGHT = 20;
+    private static final int INPUT_Y_OFFSET = -30;
+    private static final int BUTTON_WIDTH = 150;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int BUTTON_Y_OFFSET = 10;
+    private static final int TITLE_Y_POSITION = 20;
+
+    // Component Configuration
+    private static final int MAX_MESSAGE_LENGTH = 256;
+    private static final int TITLE_COLOR = 0xFFFFFF;
+
+    // Translation Keys
+    private static final String TRANSLATION_KEY_TITLE = "screen.task-mod.message.title";
+    private static final String TRANSLATION_KEY_HINT = "screen.task-mod.message.hint";
+    private static final String TRANSLATION_KEY_SEND_BUTTON = "screen.task-mod.message.send";
+    private static final String TRANSLATION_KEY_SENT_MESSAGE = "screen.task-mod.message.sent";
+
+    // UI Components
     private EditBox messageInput;
     private Button sendButton;
 
+    /**
+     * Creates a new MessageScreen instance.
+     */
     public MessageScreen() {
-        super(Component.literal("Отправка сообщения"));
+        super(Component.translatable(TRANSLATION_KEY_TITLE));
     }
 
     @Override
     protected void init() {
         super.init();
-
-        // Создаем текстовое поле для ввода сообщения
         this.messageInput = new EditBox(
-            this.font,
-            this.width / 2 - 150,  // x позиция (центрировано)
-            this.height / 2 - 30,  // y позиция
-            300,                    // ширина
-            20,                     // высота
-            Component.literal("Введите сообщение")
+                this.font,
+                this.width / 2 - INPUT_WIDTH / 2,
+                this.height / 2 + INPUT_Y_OFFSET,
+                INPUT_WIDTH,
+                INPUT_HEIGHT,
+                Component.translatable(TRANSLATION_KEY_HINT)
         );
-        this.messageInput.setMaxLength(256);  // Максимальная длина сообщения
-        this.messageInput.setValue("");        // Начальное значение
+        this.messageInput.setMaxLength(MAX_MESSAGE_LENGTH);
+        this.messageInput.setValue("");
         this.addRenderableWidget(this.messageInput);
 
-        // Создаем кнопку отправки
         this.sendButton = Button.builder(
-            Component.literal("Отправить"),
-            button -> this.onSendMessage()
-        )
-        .bounds(
-            this.width / 2 - 75,   // x позиция (центрировано)
-            this.height / 2 + 10,  // y позиция (ниже текстового поля)
-            150,                    // ширина
-            20                      // высота
-        )
-        .build();
+                        Component.translatable(TRANSLATION_KEY_SEND_BUTTON),
+                        button -> this.onSendMessage()
+                )
+                .bounds(
+                        this.width / 2 - BUTTON_WIDTH / 2,
+                        this.height / 2 + BUTTON_Y_OFFSET,
+                        BUTTON_WIDTH,
+                        BUTTON_HEIGHT
+                )
+                .build();
         this.addRenderableWidget(this.sendButton);
 
-        // Устанавливаем фокус на текстовое поле
         this.setInitialFocus(this.messageInput);
     }
 
     /**
-     * Метод, вызываемый при нажатии кнопки "Отправить"
+     * Handles the message send action.
+     * <p>
+     * Validates the input, sends the message to the player's chat,
+     * and clears the input field.
      */
     private void onSendMessage() {
         String message = this.messageInput.getValue().trim();
 
         if (!message.isEmpty()) {
-            // Здесь можно добавить логику отправки сообщения
-            // Например, отправка на сервер или вывод в чат
             if (this.minecraft != null && this.minecraft.player != null) {
-                this.minecraft.player.sendSystemMessage(
-                    Component.literal("Вы отправили: " + message)
+                this.minecraft.player.displayClientMessage(
+                        Component.translatable(TRANSLATION_KEY_SENT_MESSAGE, message),
+                        true
                 );
             }
 
-            // Очищаем поле ввода после отправки
             this.messageInput.setValue("");
-
-            // Опционально: закрываем экран после отправки
-            // this.onClose();
+            this.onClose();
         }
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // Рендерим фон
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
-
-        // Рендерим заголовок
-        graphics.drawCenteredString(
-            this.font,
-            this.title,
-            this.width / 2,
-            20,
-            0xFFFFFF  // Белый цвет
-        );
-
-        // Рендерим виджеты (текстовое поле и кнопку)
         super.render(graphics, mouseX, mouseY, partialTick);
+
+        graphics.drawCenteredString(
+                this.font,
+                this.title,
+                this.width / 2,
+                TITLE_Y_POSITION,
+                TITLE_COLOR
+        );
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // Обрабатываем нажатие Enter для отправки сообщения
-        if (keyCode == 257) {  // 257 = Enter
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             this.onSendMessage();
             return true;
         }
-
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean isPauseScreen() {
-        // Не ставим игру на паузу при открытии этого экрана
         return false;
     }
 }
