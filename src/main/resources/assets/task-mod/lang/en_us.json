@@ -1,8 +1,0 @@
-{
-  "key.taskmod.open_message_screen": "Open Message Screen",
-  "category.taskmod.keys": "Task Mod",
-  "screen.task-mod.message.title": "Send Message",
-  "screen.task-mod.message.hint": "Enter message",
-  "screen.task-mod.message.send": "Send",
-  "screen.task-mod.message.sent": "You sent: %s"
-}

@@ -1,0 +1,10 @@
+plugins {
+	id 'java'
+}
+
+group = 'stnslv.taskmod'
+version = '1.0.0'
+
+repositories {
+	mavenCentral()
+}

@@ -1,8 +1,0 @@
-{
-  "key.taskmod.open_message_screen": "Открыть экран сообщения",
-  "category.taskmod.keys": "Task Mod",
-  "screen.task-mod.message.title": "Отправка сообщения",
-  "screen.task-mod.message.hint": "Введите сообщение",
-  "screen.task-mod.message.send": "Отправить",
-  "screen.task-mod.message.sent": "Вы отправили: %s"
-}

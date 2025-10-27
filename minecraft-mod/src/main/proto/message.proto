@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package stnslv.taskmod;
+
+option java_package = "stnslv.taskmod.proto";
+option java_outer_classname = "MessageProto";
+
+message PlayerMessage {
+  string player_uuid = 1;
+  string text = 2;
+}
